@@ -1,4 +1,5 @@
 import { UrlModel } from "../models/model.url.js";
+import { UrlService } from "../service/url.service.js";
 import { ApiError, ApiResponse, asyncHandler } from "../util/asyncHandler.util.js";
 
 import { generateID } from "../util/util.randomID.js"
@@ -15,17 +16,7 @@ export const UrlController = {
 
         while (attempts < 5) {
             try {
-                const shortID = await generateID();
-                console.log("ShortID: ", shortID, "OriginalURL: ", originalURL);
-
-                await UrlModel.create({
-                    originalURL,
-                    shortID,
-                    clicks: 0,
-                    expiresAt: expTime
-                        ? new Date(Date.now() + expTime * 1000)
-                        : undefined,
-                });
+                const shortID = await UrlService.create({ originalURL, expTime });
                 return res.status(200).json(new ApiResponse(201, { shortID }, "Url Shortned"))
             } catch (err) {
                 if (err.code === 11000) {
@@ -39,7 +30,7 @@ export const UrlController = {
         throw new ApiError(500, "Failed to generate unique short URL");
     }),
     get: asyncHandler(async (req, res) => {
-        const urls = await UrlModel.find().sort({ createdAt: -1 }).limit(10);
+        const urls = await UrlService.getAll();
 
         res.status(200).json(new ApiResponse(200, { urls }, "Url Fetched"));
     }),
