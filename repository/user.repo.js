@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { API_MESSAGES } from "../constants/apiErrorMessages.js";
 import { UserModel } from "../models/user.model.js"
 import { ApiError } from "../util/asyncHandler.util.js";
@@ -12,7 +13,7 @@ export const UserRepo = {
         return user;
     },
 
-    async getUser({ userName, id, email, isActive = true }) {
+    async getUserStrict({ userName, id, email, isActive = true }) {
         const filters = [];
 
         if (id) filters.push({ _id: id });
@@ -23,15 +24,6 @@ export const UserRepo = {
             throw new ApiError(400, "At least one identifier required");
         }
 
-        // If only one identifier → simple query
-        if (filters.length === 1) {
-            return await UserModel.findOne({
-                ...filters[0],
-                isActive
-            });
-        }
-
-        // If multiple identifiers → ensure SAME user
         const user = await UserModel.findOne({
             $and: filters,
             isActive
@@ -42,6 +34,26 @@ export const UserRepo = {
         }
 
         return user;
+    },
+
+    async getUser({ userName, id, email, isActive = true }) {
+        const filters = [];
+
+        if (email) filters.push({ email });
+        if (userName) filters.push({ userName });
+
+        if (id && mongoose.Types.ObjectId.isValid(id)) {
+            filters.push({ _id: id });
+        }
+
+        if (filters.length === 0) {
+            throw new ApiError(400, "At least one identifier required");
+        }
+
+        return await UserModel.findOne({
+            $or: filters,
+            isActive
+        });
     },
 
     async getConflictingUser({ email, userName }) {

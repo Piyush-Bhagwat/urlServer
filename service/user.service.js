@@ -17,5 +17,12 @@ export const UserService = {
         delete user.password;
 
         return user.toObject()
+    },
+    async getUserByEmail(email) {
+        if (!email) {
+            throw new ApiError(400, "Email required");
+        }
+        const user = await UserRepo.getUser({ email });
+        return user;
     }
 }
