@@ -2,7 +2,6 @@ import { UrlModel } from "../models/model.url.js";
 import { UrlService } from "../service/url.service.js";
 import { ApiError, ApiResponse, asyncHandler } from "../util/asyncHandler.util.js";
 
-import { generateID } from "../util/util.randomID.js"
 
 export const UrlController = {
     create: asyncHandler(async (req, res) => {
@@ -16,7 +15,7 @@ export const UrlController = {
 
         while (attempts < 5) {
             try {
-                const shortID = await UrlService.create({ originalURL, expTime });
+                const shortID = await UrlService.create({ originalURL, expTime, user: req.user._id });
                 return res.status(200).json(new ApiResponse(201, { shortID }, "Url Shortned"))
             } catch (err) {
                 if (err.code === 11000) {
@@ -27,19 +26,23 @@ export const UrlController = {
             }
         }
 
-        throw new ApiError(500, "Failed to generate unique short URL");
+        throw new ApiError(500, "Failed to generate unique short URL; please try again");
     }),
     get: asyncHandler(async (req, res) => {
-        const urls = await UrlService.getAll();
+        const urls = await UrlService.getAll({ user: req.user?._id });
 
         res.status(200).json(new ApiResponse(200, { urls }, "Url Fetched"));
     }),
     openUrl: asyncHandler(async (req, res) => {
         const shortURL = req.params.shortUrl;
-        const url = await UrlModel.findOne({ shortID: shortURL });
+        const url = await UrlModel.findOne({ shortID: shortURL, user: req.user._id, isDeleted: false, isActive: true });
         if (!url) {
             throw new ApiError(404, "Url not found")
         }
+
+        if (url.expiresAt && url.expiresAt < new Date()) {
+            throw new ApiError(410, "URL is expired")
+        } ``
 
         url.clicks++;
         await url.save();

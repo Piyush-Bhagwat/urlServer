@@ -5,6 +5,11 @@ const urlSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
     queryParams: {
         type: [{
             key: String,
@@ -26,6 +31,8 @@ const urlSchema = new mongoose.Schema({
         type: Date,
         index: { expires: "10m" },
     },
+    isDeleted: { type: Boolean, default: false },
+    isActive: { type: Boolean, default: true },
     clicks: {
         type: Number,
         default: 0,

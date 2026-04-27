@@ -25,6 +25,7 @@ app.use(limiter);
 app.use(cors());
 app.use(json());
 app.use(urlencoded({ extended: true }));
+
 app.use("/api", router);
 
 app.get("/:shortUrl", UrlController.openUrl);

@@ -31,5 +31,8 @@ export const authenticate = asyncHandler(async (req, res, next) => {
 
     req.user = payload;
 
+    console.log("[AUTH] ", { user: req.user.userName })
+
+
     next();
 });

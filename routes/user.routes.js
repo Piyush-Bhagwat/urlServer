@@ -8,7 +8,7 @@ const UserRouter = Router();
 UserRouter.post("/signup", UserController.signup)
 UserRouter.post("/login", UserController.login)
 UserRouter.get("/me", authenticate, asyncHandler(async (req, res) => {
-    console.log("Hello user", req.user.displayName);
+    console.log("~ User", req.user.displayName);
     return res.status(200).json(new ApiResponse(200, { user: req.user }, "User Fetched"))
 }))
 

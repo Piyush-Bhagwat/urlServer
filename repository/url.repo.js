@@ -5,6 +5,7 @@ export const UrlRepo = {
         const url = await UrlModel.create({
             originalURL,
             shortID,
+            user,
             clicks: 0,
             expiresAt: expTime
                 ? new Date(Date.now() + expTime * 1000)
