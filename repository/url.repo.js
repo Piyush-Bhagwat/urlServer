@@ -1,7 +1,7 @@
 import { UrlModel } from "../models/model.url.js";
 
 export const UrlRepo = {
-    async create({ originalURL, expTime, shortID }) {
+    async create({ originalURL, expTime, shortID, user }) {
         const url = await UrlModel.create({
             originalURL,
             shortID,

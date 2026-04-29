@@ -21,7 +21,6 @@ const urlSchema = new mongoose.Schema({
     shortID: {
         type: String,
         required: true,
-        unique: true,
     },
     createdAt: {
         type: Date,
@@ -29,7 +28,6 @@ const urlSchema = new mongoose.Schema({
     },
     expiresAt: {
         type: Date,
-        index: { expires: "10m" },
     },
     isDeleted: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },

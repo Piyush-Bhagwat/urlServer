@@ -9,4 +9,7 @@ UrlRouter.use(authenticate);
 UrlRouter.get("/", UrlController.get);
 UrlRouter.post("/", UrlController.create);
 
+UrlRouter.delete("/:id", UrlController.delete);
+UrlRouter.patch("/:id", UrlController.update);
+
 export { UrlRouter };

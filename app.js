@@ -25,10 +25,10 @@ app.use(limiter);
 app.use(cors());
 app.use(json());
 app.use(urlencoded({ extended: true }));
+app.get("/:shortUrl", UrlController.openUrl);
 
 app.use("/api", router);
 
-app.get("/:shortUrl", UrlController.openUrl);
 app.use(errorHandler);
 
 app.listen(process.env.PORT || 5000, () => {
