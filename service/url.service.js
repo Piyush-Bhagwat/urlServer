@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import { UrlRepo } from "../repository/url.repo.js";
 import { generateID } from "../util/util.randomID.js";
-
+import { UrlModel } from "../models/model.url.js";
+//CONTINUE: sprint2 1.3
 export const UrlService = {
     async create({ originalURL, expTime, user }) {
         const shortID = await generateID();
@@ -28,7 +29,7 @@ export const UrlService = {
         if (!mongoose.isValidObjectId(user)) {
             throw new Error("User id required");
         }
-        const urls = await UrlRepo.get({ user });
+        const urls = await UrlRepo.get({ filter: { user, isDeleted: false } });
 
         return urls
     }

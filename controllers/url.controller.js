@@ -1,7 +1,9 @@
 import { API_MESSAGES } from "../constants/apiErrorMessages.js";
+import { ClickModel } from "../models/click.model.js";
 import { UrlModel } from "../models/model.url.js";
 import { UrlService } from "../service/url.service.js";
 import { ApiError, ApiResponse, asyncHandler } from "../util/asyncHandler.util.js";
+import geoip from "geoip-lite"
 
 
 export const UrlController = {
@@ -45,9 +47,14 @@ export const UrlController = {
         if (url.expiresAt && url.expiresAt < new Date()) {
             throw new ApiError(410, "URL is expired")
         }
+        const ip = req.headers["x-forwarded-for"]?.split(",")[0] || req.socket.remoteAddress;
+        const userAgent = req.headers["user-agent"] || "Unknown";
 
-        url.clicks++;
-        await url.save();
+        const geo = geoip.lookup(ip);
+        const country = geo?.country || "Unknown";
+        const referrer = req.headers["referer"] || "Direct";
+
+        ClickModel.create({ url: url._id, ip, userAgent, country, referrer });
         return res.redirect(url.originalURL);
     }),
     delete: asyncHandler(async (req, res) => {
