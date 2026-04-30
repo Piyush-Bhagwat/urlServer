@@ -9,6 +9,7 @@ import geoip from "geoip-lite"
 export const UrlController = {
     create: asyncHandler(async (req, res) => {
         const { originalURL, expTime, alias } = req.body;
+        //TODO: validate the data. alias
 
         if (!originalURL) {
             throw new ApiError(400, "URL is required")
@@ -23,13 +24,18 @@ export const UrlController = {
                 return res.status(201).json(new ApiResponse(201, { shortID }, "Url Shortned"))
             } catch (err) {
                 if (err.code === 11000) {
+                    if (alias) {
+                        throw new ApiError(409, "Alias already taken")
+                    }
                     attempts++;
                     continue; // retry with new ID
                 }
                 throw err; // unknown error
             }
         }
-
+        if (alias) {
+            throw new ApiError(500, "Failed to generate short url, please try again")
+        }
         throw new ApiError(500, "Failed to generate unique short URL; please try again");
     }),
     get: asyncHandler(async (req, res) => {

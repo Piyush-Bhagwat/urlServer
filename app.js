@@ -7,25 +7,20 @@ import rateLimit from "express-rate-limit";
 import { router } from "./routes/index.js";
 import { UrlController } from "./controllers/url.controller.js";
 import { errorHandler } from "./middlewares/error.handler.js";
+import { createRateLimiter } from "./middleware/rateLimiter.middlerware.js";
 
 config()
 const log = console.log;
-const limiter = rateLimit({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    max: 20, // Max 10 requests per IP per minute
-    message: { message: "Too many requests, please try again later." },
-    headers: true, // Sends rate limit info in headers
-});
 
 const app = express();
+const redirectLimiter = createRateLimiter(60, 1, "Too many requests.");
 
 connectDB();
 
-app.use(limiter);
 app.use(cors());
 app.use(json());
 app.use(urlencoded({ extended: true }));
-app.get("/:shortUrl", UrlController.openUrl);
+app.get("/:shortUrl", redirectLimiter, UrlController.openUrl);
 
 app.use("/api", router);
 
