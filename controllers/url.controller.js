@@ -38,11 +38,23 @@ export const UrlController = {
         }
         throw new ApiError(500, "Failed to generate unique short URL; please try again");
     }),
-    get: asyncHandler(async (req, res) => {
+    getAll: asyncHandler(async (req, res) => {
         const { limit = 20, page = 1 } = req.query;
         const { urls, pagination } = await UrlService.getAll({ user: req.user?._id, isDeleted: false, paginationInfo: { limit: Math.max(1, limit), page: Math.max(1, page) } });
 
         res.status(200).json(new ApiResponse(200, { pagination, urls }, "Url Fetched"));
+    }),
+    get: asyncHandler(async (req, res) => {
+        const shortID = req.params.id;
+        const url = await UrlModel.findOne({ shortID, isDeleted: false, user: req.user._id }).lean();
+
+        if (!url) {
+            throw new ApiError(404, API_MESSAGES.URL.NOT_FOUND);
+        }
+
+        const totalClicks = await ClickModel.countDocuments({ url: url._id });
+
+        return res.status(200).json(new ApiResponse(200, { ...url, totalClicks }, "url fetched"));
     }),
     openUrl: asyncHandler(async (req, res) => {
         const shortURL = req.params.shortUrl;

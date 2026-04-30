@@ -31,7 +31,11 @@ export const UrlService = {
         if (!mongoose.isValidObjectId(user)) {
             throw new Error("User id required");
         }
-        const { urls, pagination } = await UrlRepo.get({ filter: { user, isDeleted: false }, limit: paginationInfo.limit, page: paginationInfo.page });
+        const { urls, pagination } = await UrlRepo.get({
+            filter: {
+                user: new mongoose.Types.ObjectId(user), isDeleted: false
+            }, limit: paginationInfo.limit, page: paginationInfo.page
+        });
 
         return { urls, pagination }
     },

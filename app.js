@@ -2,12 +2,15 @@ import { config } from "dotenv"
 
 import connectDB from "./config/config.db.js";
 import express, { json, urlencoded } from "express";
+
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 import { router } from "./routes/index.js";
 import { UrlController } from "./controllers/url.controller.js";
 import { errorHandler } from "./middleware/error.handler.js";
 import { createRateLimiter } from "./middleware/rateLimiter.middlerware.js";
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
 
 config()
 const log = console.log;
@@ -17,6 +20,8 @@ const redirectLimiter = createRateLimiter(60, 1, "Too many requests.");
 
 connectDB();
 
+app.use(helmet());
+app.use(mongoSanitize());
 app.use(cors());
 app.use(json());
 app.use(urlencoded({ extended: true }));
