@@ -39,9 +39,10 @@ export const UrlController = {
         throw new ApiError(500, "Failed to generate unique short URL; please try again");
     }),
     get: asyncHandler(async (req, res) => {
-        const urls = await UrlService.getAll({ user: req.user?._id, isDeleted: false });
+        const { limit = 20, page = 1 } = req.query;
+        const { urls, pagination } = await UrlService.getAll({ user: req.user?._id, isDeleted: false, paginationInfo: { limit: Math.max(1, limit), page: Math.max(1, page) } });
 
-        res.status(200).json(new ApiResponse(200, { urls }, "Url Fetched"));
+        res.status(200).json(new ApiResponse(200, { pagination, urls }, "Url Fetched"));
     }),
     openUrl: asyncHandler(async (req, res) => {
         const shortURL = req.params.shortUrl;

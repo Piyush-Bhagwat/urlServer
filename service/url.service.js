@@ -27,13 +27,13 @@ export const UrlService = {
 
         return shortID
     },
-    async getAll({ user }) {
+    async getAll({ user, paginationInfo }) {
         if (!mongoose.isValidObjectId(user)) {
             throw new Error("User id required");
         }
-        const urls = await UrlRepo.get({ filter: { user, isDeleted: false } });
+        const { urls, pagination } = await UrlRepo.get({ filter: { user, isDeleted: false }, limit: paginationInfo.limit, page: paginationInfo.page });
 
-        return urls
+        return { urls, pagination }
     },
     async stats(urlId) {
         const lastWeekDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);

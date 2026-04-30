@@ -17,8 +17,9 @@ export const UrlRepo = {
 
     async get({ filter, limit = 10, page = 1 }) {
         const skip = limit * (page - 1);
-        const urls = await UrlModel.find(filter).sort({ createdAt: -1 }).limit(skip);
-
-        return urls;
+        const urls = await UrlModel.find(filter).sort({ createdAt: -1 }).limit(limit).skip(skip);
+        const count = await UrlModel.countDocuments(filter);
+        const pages = Math.ceil(count / limit)
+        return { urls, pagination: { limit, page, total: count, pages } };
     }
 }
