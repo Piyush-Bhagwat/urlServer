@@ -8,17 +8,18 @@ import geoip from "geoip-lite"
 
 export const UrlController = {
     create: asyncHandler(async (req, res) => {
-        const { originalURL, expTime } = req.body;
+        const { originalURL, expTime, alias } = req.body;
 
         if (!originalURL) {
             throw new ApiError(400, "URL is required")
         }
         let attempts = 0;
+        let maxAttempts = alias ? 1 : 5;
 
 
-        while (attempts < 5) {
+        while (attempts < maxAttempts) {
             try {
-                const shortID = await UrlService.create({ originalURL, expTime, user: req.user._id });
+                const shortID = await UrlService.create({ originalURL, alias, expTime, user: req.user._id });
                 return res.status(201).json(new ApiResponse(201, { shortID }, "Url Shortned"))
             } catch (err) {
                 if (err.code === 11000) {
