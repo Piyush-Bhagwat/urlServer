@@ -44,7 +44,7 @@ export const UserController = {
             _id: user._id
         }
 
-        const token = await jwt.sign(payload, "OurKeyBois");
+        const token = await jwt.sign(payload, process.env.JWT_SECRET);
 
         user.lastLogin = new Date();
 

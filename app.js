@@ -11,7 +11,7 @@ import { errorHandler } from "./middleware/error.handler.js";
 import { createRateLimiter } from "./middleware/rateLimiter.middlerware.js";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
-
+import morgan from "morgan";
 config()
 const log = console.log;
 
@@ -25,6 +25,7 @@ app.use(mongoSanitize());
 app.use(cors());
 app.use(json());
 app.use(urlencoded({ extended: true }));
+app.use(morgan("dev"));
 app.get("/:shortUrl", redirectLimiter, UrlController.openUrl);
 
 app.use("/api", router);

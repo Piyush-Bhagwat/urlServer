@@ -20,6 +20,7 @@ const urlSchema = new mongoose.Schema({
     },
     shortID: {
         type: String,
+        index: true,
         required: true,
     },
     createdAt: {

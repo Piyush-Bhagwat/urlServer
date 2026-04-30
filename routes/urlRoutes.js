@@ -17,6 +17,7 @@ UrlRouter.post("/", createUrlLimiter, validate(UrlValidator.create), UrlControll
 UrlRouter.use(defaultRateLimiter);
 UrlRouter.get("/", UrlController.getAll);
 UrlRouter.get("/:id", UrlController.get);
+UrlRouter.get("/:id/qr", UrlController.qr);
 UrlRouter.delete("/:id", UrlController.delete);
 UrlRouter.patch("/:id", UrlController.update);
 

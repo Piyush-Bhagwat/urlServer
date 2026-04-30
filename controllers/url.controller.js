@@ -4,7 +4,7 @@ import { UrlModel } from "../models/model.url.js";
 import { UrlService } from "../service/url.service.js";
 import { ApiError, ApiResponse, asyncHandler } from "../util/asyncHandler.util.js";
 import geoip from "geoip-lite"
-
+import QRCode from "qrcode";
 
 export const UrlController = {
     create: asyncHandler(async (req, res) => {
@@ -125,5 +125,14 @@ export const UrlController = {
         await urlDoc.save();
 
         return res.status(200).json(new ApiResponse(200, { url: urlDoc }, "URL Updated"));
+    }),
+    qr: asyncHandler(async (req, res) => {
+        const id = req.params.id;
+        const url = await UrlModel.findOne({ shortID: id, user: req.user._id, isDeleted: false });
+        if (!url) {
+            throw new ApiError(404, API_MESSAGES.URL.NOT_FOUND)
+        }
+        const qr = await QRCode.toDataURL(`${process.env.BASE_URL}/${url.shortID}`);
+        return res.status(200).json(new ApiResponse(200, { qr }, "QR Generated"));
     })
 }
