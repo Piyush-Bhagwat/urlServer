@@ -2,6 +2,8 @@ import express from "express";
 import { UrlController } from "../controllers/url.controller.js";
 import { authenticate } from "../middleware/auth.middlewware.js";
 import { createRateLimiter, defaultRateLimiter } from "../middleware/rateLimiter.middlerware.js";
+import { validate } from "../middleware/validator.middleware.js";
+import { UrlValidator } from "../validators/url.validators.js";
 
 
 const UrlRouter = express.Router();
@@ -10,7 +12,7 @@ const createUrlLimiter = createRateLimiter(20, 15, "Too many URLs created, slow 
 
 
 UrlRouter.use(authenticate);
-UrlRouter.post("/", createUrlLimiter, UrlController.create);
+UrlRouter.post("/", createUrlLimiter, validate(UrlValidator.create), UrlController.create);
 
 UrlRouter.use(defaultRateLimiter);
 UrlRouter.get("/", UrlController.get);

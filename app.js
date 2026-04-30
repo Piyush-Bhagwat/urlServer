@@ -6,7 +6,7 @@ import cors from "cors";
 import rateLimit from "express-rate-limit";
 import { router } from "./routes/index.js";
 import { UrlController } from "./controllers/url.controller.js";
-import { errorHandler } from "./middlewares/error.handler.js";
+import { errorHandler } from "./middleware/error.handler.js";
 import { createRateLimiter } from "./middleware/rateLimiter.middlerware.js";
 
 config()
